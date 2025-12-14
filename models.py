@@ -13,7 +13,7 @@ from transformer import Transformer
 
 
 class SparseGraphAttentionLayer(nn.Module):
-    """显存友好的稀疏版 GAT 层"""
+ 
     def __init__(self, in_features, out_features, dropout=0.2, alpha=0.01, concat=True):
         super(SparseGraphAttentionLayer, self).__init__()
         self.W = nn.Linear(in_features, out_features, bias=False)
@@ -33,7 +33,7 @@ class SparseGraphAttentionLayer(nn.Module):
         Wh_dst = Wh[dst]
 
         e = self.leakyrelu((Wh_src @ self.a_src + Wh_dst @ self.a_dst).squeeze(-1))
-        # 对每个目标节点归一化
+
         attention = torch.zeros_like(e)
         num_nodes = h.size(0)
         attention = torch.exp(e - e.max())
@@ -41,12 +41,12 @@ class SparseGraphAttentionLayer(nn.Module):
         attention = attention / (attention_sum[dst] + 1e-9)
         attention = F.dropout(attention, self.dropout, training=self.training)
 
-        # 聚合邻居
+
         out = torch.zeros_like(Wh)
         out.index_add_(0, dst, attention.unsqueeze(-1) * Wh_src)
         return F.elu(out) if self.concat else out
 class GAT_Regressor(nn.Module):
-    """显存友好的 GAT 回归模型"""
+
     def __init__(self, nfeat, nhid, nout, nheads=4, dropout=0.2, alpha=0.01):
         super(GAT_Regressor, self).__init__()
         self.attentions = nn.ModuleList([
@@ -109,13 +109,7 @@ class CrossAttentionLayer(nn.Module):
         self.dropout = nn.Dropout(0.1)
 
     def forward(self, query, key, value, mask=None):
-        """
-        :param query: (batch_size, query_len, embed_dim)
-        :param key: (batch_size, key_len, embed_dim)
-        :param value: (batch_size, value_len, embed_dim)
-        :param mask: (batch_size, query_len, key_len)
-        :return: output, attention_weights
-        """
+
         B, N1, _ = query.shape
         _, N2, _ = key.shape
 
@@ -183,3 +177,4 @@ class SpaBiT(nn.Module):
         x = x.squeeze(0)
 
         return h, F.relu(x)
+
