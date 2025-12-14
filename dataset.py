@@ -57,7 +57,7 @@ class SpatialDataManager:
         self.gene_list_filename = "selected_gene_list.txt"
         self.train_ratio = train_ratio
         self.seed = seed
-        self.neighbors = neighbor_ratio  # KNN 邻居个数（你要求的 4）
+        self.neighbors = neighbor_ratio  
         np.random.seed(self.seed)
 
         self._load_base_data()
@@ -211,8 +211,7 @@ class SpatialDataManager:
     def get_gat_dataset(self):
        
         pkg = {
-            "features": self.gat_features.clone(),                    # torch.FloatTensor
-            "adj": self.gat_adj.clone(),                              # torch.FloatTensor (0/1)
+            "features": self.gat_features.clone()
             "coords": torch.from_numpy(self.spot_coords.copy()).long(),
             "spatials": torch.from_numpy(self.spot_spatials.copy()).long(),
             "train_mask": torch.from_numpy(self.train_mask.copy()),
@@ -233,10 +232,7 @@ class SpatialDataManager:
         train_img_local = self.img_local_ebd[train_mask]
         train_indices = self.global_indices[train_mask]
 
-        # log2 标准化
         data_log = np.log2(train_count.values.astype(np.float32) + 1.0).astype(np.float32)
-
-        # ✅ 关键：neighbor_data 改为 GAT 输出的嵌入
         neighbor_emb = self.neighbor_ebd[train_mask]
 
         train_labels = None
@@ -265,10 +261,8 @@ class SpatialDataManager:
         test_img_local = self.img_local_ebd[test_mask]
         test_indices = self.global_indices[test_mask]
 
-        # log2 标准化
-        data_log = np.log2(test_count.values.astype(np.float32) + 1.0).astype(np.float32)
 
-        # ✅ 同样替换 neighbor_data 为 GAT 嵌入
+        data_log = np.log2(test_count.values.astype(np.float32) + 1.0).astype(np.float32)
         neighbor_emb = self.neighbor_ebd[test_mask]
 
         test_labels = None
@@ -280,7 +274,7 @@ class SpatialDataManager:
             local_ebd=test_img_local.float(),
             coords=torch.from_numpy(test_coords).long(),
             spatials=torch.from_numpy(test_spatials).long(),
-            neighbor_data=neighbor_emb.float(),  # 👈 改为 GAT embedding
+            neighbor_data=neighbor_emb.float(), 
             global_indices=torch.from_numpy(test_indices).long(),
             labels=test_labels
         )
@@ -293,4 +287,5 @@ class SpatialDataManager:
 
     def get_test_spots(self):
         return self.count_mtx.index[~self.train_mask].tolist()
+
 
