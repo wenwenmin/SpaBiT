@@ -120,36 +120,17 @@ def test_model(model, test_loader,selection_id, device):
         print("PCC:", selection_id, np.mean(pr_stage_common))
         print("AVG MSE:", selection_id, np.mean(mse_values))
         print("AVG MAE:", selection_id, np.mean(mae_values))
-
-        # target_genes = ["Cryab","Rgs9","Tmeff2","Ptprn"]  
-        # print(f"\nPCC values for specific genes in {selection_id}:")
-        # for gene_name in target_genes:
-        #     if gene_name in used_genes:
-        #         idx = used_genes.index(gene_name)
-        #         print(f"{gene_name}: PCC = {pr_stage[idx]:.4f}")
-        #     else:
-        #         print(f"{gene_name}: Not found in used_genes.")
-        #
-        # 
-        # top5_idx = np.argsort(-pr_stage)[:5]
-        # print(f"\nTop 5 Genes with highest PCC in {selection_id}:")
-        # for idx in top5_idx:
-        #     print(f"{used_genes[idx]}: PCC = {pr_stage[idx]:.4f}")
     return adata_stage,np.mean(pr_stage_common), np.mean(mse_values), np.mean(mae_values),  #pr_stage_common
 
 if __name__ == '__main__':
 
-    # seed_list = [1, 8, 24, 50, 222, 333, 2001, 2048,3234,761]
-    seed_list=[8]
-    # num_runs = 1
+    seed_list=[]
     num_runs = len(seed_list)
-   
     all_pcc_list = []
     all_mse_list = []
     all_mae_list = []
 
-    section_list = ["151507", "151508", "151509", "151510", "151669", "151670", "151671", "151672", "151673", "151674",
-                   "151675", "151676"]
+    section_list = []
     for run_idx, seed in enumerate(seed_list):
         setup_seed(seed)
         print(f"Running iteration {run_idx + 1}/{num_runs}")
@@ -158,7 +139,7 @@ if __name__ == '__main__':
         mse_list = []
         mae_list = []
         for section_id in section_list:
-            data_manager = SpatialDataManager(selection_id =section_id, train_ratio=0.5, seed=42, neighbor_ratio=6)
+            data_manager = SpatialDataManager(selection_id =section_id, seed=42, neighbor_ratio=6)
             train_dataset =  data_manager.get_train_dataset()
             test_dataset = data_manager.get_test_dataset()
             num_genges = train_dataset.data.shape[1]
@@ -174,18 +155,8 @@ if __name__ == '__main__':
             train_adata = sc.AnnData(train_counts)
             train_adata.obsm["coord"] = train_coords
             train_adata.obsm["spatial"] = train_spatials
-            # train_adata.obs["tumor"] = data_manager.labels[data_manager.train_mask]
-            train_adata.var_names = data_manager.selected_genes 
-            # # 拼接 test + train
+            train_adata.var_names = data_manager.selected_genes             
             final_adata = pred_adata.concatenate(train_adata, index_unique=None)
-            # 保存 final_adata
-            # final_adata.write(section_id + "_final_adata.h5ad")
-            # train_adata.write(section_id + "_train_adata.h5ad")
-            # pred_adata.write(section_id + "_final_adata.h5ad")
-            # train_adata.write(section_id + "_train_adata.h5ad")
-
-
-            # all_pcc_table[section_id] = pcc_values.tolist()
 
             pcc_list.append(pcc)
             mse_list.append(mse)
@@ -194,7 +165,6 @@ if __name__ == '__main__':
         all_pcc_list.append(pcc_list)
         all_mse_list.append(mse_list)
         all_mae_list.append(mae_list)
-    #
     pcc_array = np.array(all_pcc_list)  
     mse_array = np.array(all_mse_list)
     mae_array = np.array(all_mae_list)
@@ -206,7 +176,6 @@ if __name__ == '__main__':
     mse_std = np.std(mse_array, axis=0)
     mae_mean = np.mean(mae_array, axis=0)
     mae_std = np.std(mae_array, axis=0)
-    #
    
     results_dict = {}
     for i, section_id in enumerate(section_list):
@@ -217,16 +186,5 @@ if __name__ == '__main__':
     #
     df = pd.DataFrame(results_dict, index=["PCC", "MSE", "MAE"])
     df.to_csv("GAT_DLPFC_results.csv")
-    #
-    # print("实验完成，结果已保存")
-    # df_pcc_table = pd.DataFrame.from_dict(all_pcc_table, orient='index')
-    # df_pcc_table.index.name = 'Dataset'
-    #     # df_pcc_table.to_csv(f"BCA_PCC_MP_table.csv")
-    #
-    #     df = pd.DataFrame({
-    #         section_list[i]: [pcc_list[i], mse_list[i], mae_list[i]]
-    #         for i in range(len(section_list))
-    #     }, index=["PCC", "MSE", "MAE"])
-    #     df = df.round(4)
+   
 
-    #     df.to_csv("VisiumHD_results_results.csv")
