@@ -45,7 +45,7 @@ Given the outstanding performance of large pre-trained general-purpose foundatio
 - Finally, train SpaBiT and evaluate its spatial gene expression prediction performance by running [`main.py`](main.py).
 ```shell
 python process_patch.py --directory dataset\\
-python train_gat.py --directory dataset\\
+python train_gat.py --directory dataset\\ --epochs 3000
 python main.py --directory dataset\\ --epochs 1000
 ```
 `--directory` represents the directory of your dataset, and `--login` represents the key of the UNI model you own.
