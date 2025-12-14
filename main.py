@@ -55,7 +55,7 @@ def train(selection_id='151507', num_genges=None, train_loader=None):
     torch.save(model, selection_id + "_train_" + ".ckpt")
 
 def test_model(model, test_loader,selection_id, device):
-    # 将模型切换到评估模式
+  
     model.eval()
     preds=None
     h_embs = None
@@ -63,13 +63,13 @@ def test_model(model, test_loader,selection_id, device):
     coords_all=[]
     spatial_all=[]
     # labels_all=[]
-    # 使用模型评估测试集
-    with torch.no_grad():  # 在测试时禁用梯度计算
+   
+    with torch.no_grad(): 
         for gene, local_emb, coord ,spatial, neighbor_data, labels in test_loader:
             gene, local_emb,neighbor_data , coord = gene.to(device), local_emb.to(
                 device),neighbor_data.to(device), coord.to(device)
             # neighbor_mean = neighbor_data.mean(dim=1).to(device)
-            # 获取模型的预测
+           
             h,pred = model(local_emb,neighbor_data,coord)
             coords_all.append(coord.cpu().numpy())
             spatial_all.append(spatial)
@@ -92,7 +92,7 @@ def test_model(model, test_loader,selection_id, device):
         adata_stage = sc.AnnData(generate_profile)
         current_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.dirname(os.path.dirname(current_dir))
-        data_dir = os.path.join(project_root, 'dataset','DLPFC', selection_id)    #不是DLPFC数据集结构不一样
+        data_dir = os.path.join(project_root, 'dataset','DLPFC', selection_id)   
         with open(os.path.join(data_dir, 'processed', 'selected_gene_list.txt'), 'r') as f:
             used_genes = [line.strip() for line in f.readlines() if line.strip()]
         adata_stage.var.index = used_genes
@@ -121,7 +121,7 @@ def test_model(model, test_loader,selection_id, device):
         print("AVG MSE:", selection_id, np.mean(mse_values))
         print("AVG MAE:", selection_id, np.mean(mae_values))
 
-        # target_genes = ["Cryab","Rgs9","Tmeff2","Ptprn"]  # 👈 在这里写你要看的基因名列表
+        # target_genes = ["Cryab","Rgs9","Tmeff2","Ptprn"]  
         # print(f"\nPCC values for specific genes in {selection_id}:")
         # for gene_name in target_genes:
         #     if gene_name in used_genes:
@@ -130,7 +130,7 @@ def test_model(model, test_loader,selection_id, device):
         #     else:
         #         print(f"{gene_name}: Not found in used_genes.")
         #
-        # # === 输出PCC前5个基因名与PCC值
+        # 
         # top5_idx = np.argsort(-pr_stage)[:5]
         # print(f"\nTop 5 Genes with highest PCC in {selection_id}:")
         # for idx in top5_idx:
@@ -143,17 +143,13 @@ if __name__ == '__main__':
     seed_list=[8]
     # num_runs = 1
     num_runs = len(seed_list)
-    # 初始化结果存储列表
+   
     all_pcc_list = []
     all_mse_list = []
     all_mae_list = []
 
     section_list = ["151507", "151508", "151509", "151510", "151669", "151670", "151671", "151672", "151673", "151674",
                    "151675", "151676"]
-    # section_list = ["151507","151673","151674"]
-    # section_list = ["Alex2"]
-    # section_list = ["151508"]
-
     for run_idx, seed in enumerate(seed_list):
         setup_seed(seed)
         print(f"Running iteration {run_idx + 1}/{num_runs}")
@@ -179,7 +175,7 @@ if __name__ == '__main__':
             train_adata.obsm["coord"] = train_coords
             train_adata.obsm["spatial"] = train_spatials
             # train_adata.obs["tumor"] = data_manager.labels[data_manager.train_mask]
-            train_adata.var_names = data_manager.selected_genes  #      使用相同的基因顺序
+            train_adata.var_names = data_manager.selected_genes 
             # # 拼接 test + train
             final_adata = pred_adata.concatenate(train_adata, index_unique=None)
             # 保存 final_adata
@@ -194,16 +190,16 @@ if __name__ == '__main__':
             pcc_list.append(pcc)
             mse_list.append(mse)
             mae_list.append(mae)
-            # 保存每次运行的结果
+            
         all_pcc_list.append(pcc_list)
         all_mse_list.append(mse_list)
         all_mae_list.append(mae_list)
     #
-    pcc_array = np.array(all_pcc_list)  # 形状: (num_runs, len(section_list))
+    pcc_array = np.array(all_pcc_list)  
     mse_array = np.array(all_mse_list)
     mae_array = np.array(all_mae_list)
-    #
-    # # 计算均值和标准差
+    
+    
     pcc_mean = np.mean(pcc_array, axis=0)
     pcc_std = np.std(pcc_array, axis=0)
     mse_mean = np.mean(mse_array, axis=0)
@@ -211,7 +207,7 @@ if __name__ == '__main__':
     mae_mean = np.mean(mae_array, axis=0)
     mae_std = np.std(mae_array, axis=0)
     #
-    # # 创建结果DataFrame，格式为"mean ± std"
+   
     results_dict = {}
     for i, section_id in enumerate(section_list):
         pcc_str = f"{pcc_mean[i]:.4f} ± {pcc_std[i]:.4f}"
@@ -232,4 +228,5 @@ if __name__ == '__main__':
     #         for i in range(len(section_list))
     #     }, index=["PCC", "MSE", "MAE"])
     #     df = df.round(4)
+
     #     df.to_csv("VisiumHD_results_results.csv")
