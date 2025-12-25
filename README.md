@@ -35,7 +35,7 @@ Human Breast Cancer（BC） https://www.10xgenomics.com/datasets/human-breast-ca
 
 The HER2-positive breast cancer datasets: [https://github.com/almaan/her2st](https://github.com/almaan/her2st).
 
-All preprocessed data used in this work are available at: [https://zenodo.org/uploads/15233992](https://zenodo.org/records/17762423).
+All preprocessed data used in this work are available at: [https://zenodo.org/uploads/15233992](https://zenodo.org/records/18044067).
 
 ## Pre-trained general-purpose foundation mode
 Given the outstanding performance of large pre-trained general-purpose foundation models in clinical tasks, we use UNI as the backbone feature extractor. Before using SpaBiT, you need to apply to UNI for permission to access the model weights: [https://huggingface.co/mahmoodlab/UNI](https://huggingface.co/mahmoodlab/UNI).
