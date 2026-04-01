@@ -2,7 +2,7 @@
 ## Introduction
 Spatial transcriptomics (ST) enables the simultaneous measurement of gene expression and spatial locations within tissue sections, providing a powerful framework for studying spatial heterogeneity and tissue microenvironments. However, current spot-based ST platforms suffer from limited spatial resolution, sparse sampling density, and high experimental costs, which restrict their widespread use in large-scale biomedical studies.To address these challenges, we introduce **SpaBiT**, a multimodal deep learning framework that integrates H\&E-stained histology images with spot-level ST data to predict and enhance spatial gene expression. SpaBiT leverages a general-purpose pathology foundation model (UNI) to extract high-dimensional image features, a graph attention network (GAT) to learn neighborhood-aware expression embeddings, and a bidirectional cross-attention + Transformer architecture to fuse multimodal information and infer high-density spatial gene expression maps.Experimental evaluations across multiple datasets from different ST platforms demonstrate that SpaBiT outperforms representative image-driven and expression-driven baselines in predicting gene expression at unmeasured locations. Moreover, SpaBiT enhances spatial gene expression patterns, preserves underlying spatial structure, and facilitates downstream analyses such as spatial domain identification, tumor region detection, and functional enrichment.
 
-![Overview.png](Overview.png)
+![Overview.png](Overview.pdf)
 
 ## Requirements
 All experiments were conducted on an NVIDIA RTX 4090 GPU. Before running SpabiT, you need to create a conda environment and install the required packages:
