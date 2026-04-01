@@ -45,7 +45,7 @@ palette2 = {
 }
 # Turth Label
 selection_id = '151673'
-model_path = "HistoSGE_pre"
+model_path = "SpaBiT_pre"
 method = "GraphST"
 num_clusters = 7   # 可根据模型自动设置聚类数
 data_root = Path(f'D:\DL_project\diffusion_st_prediction_2\dataset\DLPFC/{selection_id}')
@@ -73,22 +73,20 @@ clusters=None
 sample_adata = sc.read_h5ad(f"{model_path}/{selection_id}_final_adata.h5ad")
 if method == "Kmeans":
     sc.pp.pca(sample_adata, n_comps=70)
-    #使用 KMeans 聚类
+    
     kmeans = KMeans(n_clusters=num_clusters, random_state=42)
-    sample_adata.obs["cluster"] = kmeans.fit_predict(sample_adata.obsm["X_pca"])#使用基因主成分分析时这里填入X_pca
+    sample_adata.obs["cluster"] = kmeans.fit_predict(sample_adata.obsm["X_pca"])
     sample_adata.obs["cluster"] = pd.Categorical(sample_adata.obs["cluster"])
     clusters = sample_adata.obs["cluster"]
-# 使用层次聚类
-# clustering = AgglomerativeClustering(n_clusters=num_clusters)
-# labels = clustering.fit_predict(sample_adata.obsm["embedding"])
-# sample_adata.obs["cluster"] = pd.Categorical(labels)
 
-# GraphST  SEDR   STAGATE
+
+
+
 elif method == "GraphST":
     os.environ['LANG'] = 'en_US.UTF-8'
     os.environ['LC_ALL'] = 'en_US.UTF-8'
     os.environ['R_LANG'] = 'en_US.UTF-8'
-    # 方法1: 使用原始字符串（推荐）
+
     os.environ["R_HOME"] = r"C:\Program Files\R\R-4.3.2"
     # Cuda
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -113,7 +111,7 @@ elif method == "STAGATE":
     os.environ['LANG'] = 'en_US.UTF-8'
     os.environ['LC_ALL'] = 'en_US.UTF-8'
     os.environ['R_LANG'] = 'en_US.UTF-8'
-    # 方法1: 使用原始字符串（推荐）
+
     os.environ["R_HOME"] = r"C:\Program Files\R\R-4.3.2"
     # Cuda
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -125,14 +123,14 @@ elif method == "STAGATE":
     Stats_Spatial_Net(sample_adata)
     sample_adata =Train_STAGATE.train_STAGATE(sample_adata)
     # train model
-    # set radius to specify the number of neighbors considered during refinement
+ 
     radius = 50
     tool = 'mclust'  # mclust, leiden, and louvain
     # clustering
     if tool == 'mclust':
         sample_adata.obsm['emb'] =  sample_adata.obsm['STAGATE']
         print(sample_adata.obsm['emb'].shape)
-        clustering(sample_adata, num_clusters, radius=radius, method=tool, refinement=True)
+        clustering(sample_adata, num_clusters, radius=radius, method=tool, refinement=False)
         # For DLPFC dataset, we use optional refinement step.
     elif tool in ['leiden', 'louvain']:
         clustering(sample_adata, num_clusters, radius=radius, method=tool, start=0.1, end=2.0, increment=0.01,
