@@ -322,39 +322,6 @@ class DLPFCProcessor:
                 f.write(f"{gene}\n")
         return selected_genes
 
-
-def get_resnet_encoder(device):
-    resnet = models.resnet50(pretrained=True)
-    resnet.fc = torch.nn.Identity()  
-    resnet.to(device)
-    resnet.eval()
-
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406], 
-            std=[0.229, 0.224, 0.225]
-        )
-    ])
-    return resnet, transform
-def get_densenet_encoder(device):
-    densenet = models.densenet121(pretrained=True)
-    densenet.classifier = torch.nn.Identity()
-    densenet.to(device)
-    densenet.eval()
-
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),   
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],  
-            std=[0.229, 0.224, 0.225]
-        )
-    ])
-    return densenet, transform
-
-
 def main():
     section_list = []
     for section_id in section_list:
