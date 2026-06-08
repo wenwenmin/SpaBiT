@@ -54,5 +54,5 @@ python main.py --directory dataset\\ --epochs 1000
 `--directory` represents the directory of your dataset, and `--login` represents the key of the UNI model you own.
 
 ## Contact details
-If you have any questions, please contact 2528076418@qq.com.
+If you have any questions, please contact 2528076418@qq.com and minwenwen@ynu.edu.cn.
 
